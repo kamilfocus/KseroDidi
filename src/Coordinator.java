@@ -12,6 +12,8 @@ public class Coordinator {
     Integer totalSimulationTime;
     Boolean allProceduresFinished;
 
+    Machines machines;
+
     public class Activity{
         String header;
         Integer stateChangeTime;
@@ -26,7 +28,10 @@ public class Coordinator {
         }
     }
 
-    Coordinator(Integer totalSimulationTime){
+    Coordinator(Integer totalSimulationTime, Integer smallPrinterNum, Integer largePrinterNum, Integer binderNum){
+
+        machines = new Machines(smallPrinterNum, largePrinterNum, binderNum);
+
         this.currentSimulationTime = new Integer(0);
         this.totalSimulationTime = totalSimulationTime;
         allProceduresFinished = new Boolean(false);
