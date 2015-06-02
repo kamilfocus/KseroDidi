@@ -39,6 +39,35 @@ public class Machines {
             bindingMachines.add(new BindingMachine());
     }
 
+    Random getRandomGenerator(){
+        return generator;
+    }
+
+    public Integer getSmallPrinterNum() {
+        return smallPrinterNum;
+    }
+
+    public Integer getLargePrinterNum(){
+        return largePrinterNum;
+    }
+
+    public Integer getBinderNum(){
+        return  binderNum;
+    }
+
+    public LargePrinter getLargePrinter(int position){
+        return largePrinters.get(position);
+    }
+
+    public SmallPrinter getSmallPrinter(int position){
+        return smallPrinters.get(position);
+    }
+
+    public BindingMachine getBindingMachine(int position){
+        return bindingMachines.get(position);
+    }
+
+
     public class SmallPrinter{
 
         Boolean busy;
@@ -70,6 +99,27 @@ public class Machines {
             breakdown = new Boolean(false);
             inkAmount = new Integer(cartridgeCap);
             paperAmount = new Integer(paperCap);
+        }
+
+        void changeBusy(Boolean newState){
+            busy = newState;
+        }
+
+        void changeBreakDown(Boolean newState){
+            breakdown = newState;
+        }
+
+        Boolean isBreakdown(){
+            return breakdown;
+        }
+
+        Boolean isBusy(){
+            return busy;
+        }
+
+        Integer getBreakdownRepairTime(){
+            breakdownRepairTime = (5 + generator.nextInt(56));
+            return breakdownRepairTime;
         }
     }
 
@@ -105,6 +155,27 @@ public class Machines {
             inkAmount = new Integer(cartridgeCap);
             paperAmount = new Integer(paperCap);
         }
+
+        Boolean isBreakdown(){
+            return breakdown;
+        }
+
+        Boolean isBusy(){
+            return busy;
+        }
+
+        void changeBusy(Boolean newState){
+            busy = newState;
+        }
+
+        void changeBreakDown(Boolean newState){
+            breakdown = newState;
+        }
+
+        Integer getBreakdownRepairTime(){
+            breakdownRepairTime = (60 + generator.nextInt(31));
+            return breakdownRepairTime;
+        }
     }
 
     public class BindingMachine{
@@ -123,6 +194,27 @@ public class Machines {
 
             busy = new Boolean(false);
             breakdown = new Boolean(false);
+        }
+
+        Boolean isBreakdown(){
+            return breakdown;
+        }
+
+        Boolean isBusy(){
+            return busy;
+        }
+
+        void changeBusy(Boolean newState){
+            busy = newState;
+        }
+
+        void changeBreakDown(Boolean newState){
+            breakdown = newState;
+        }
+
+        Integer getBreakdownRepairTime(){
+            breakdownRepairTime = (5 + generator.nextInt(26));
+            return breakdownRepairTime;
         }
     }
 
