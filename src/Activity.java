@@ -31,7 +31,7 @@ public class Activity{
     }
 
     Activity(headers header, Integer stateChangeTime, Client client,
-             Machines machines, Integer firstMachineID, Integer secondMachineID){
+             Machines machines, Integer firstMachineID, Integer secondMachineID, Coordinator parentCoordinator){
 
         this.header = header;
         this.stateChangeTime = stateChangeTime;
@@ -40,10 +40,15 @@ public class Activity{
         this.firstMachineID = firstMachineID;
         this.secondMachineID = secondMachineID;
 
+        this.parentCoordinator = parentCoordinator;
     }
 
     Integer getStateChangeTime(){
         return stateChangeTime;
+    }
+
+    void setStateChangeTime(Integer time){
+        stateChangeTime = time;
     }
 
     Random getRandomGenerator(){
@@ -51,11 +56,11 @@ public class Activity{
     }
 
     Boolean isEqualToCurrentSimulationTime(){
-        return (stateChangeTime == parentCoordinator.getCurrentSimulationTime()) ? true : false;
+        return (stateChangeTime == parentCoordinator.getCurrentSimulationTime());
     }
 
     Boolean isStaffAvailable(){
-        return (parentCoordinator.getAvailableStaffNumber()>0) ? true : false;
+        return ((parentCoordinator.getAvailableStaffNumber()>0));
     }
 
     Machines.LargePrinter getLargePrinterAsFirst(){
@@ -76,7 +81,7 @@ public class Activity{
             case PRZYBYCIE_AWARII_DUZA:
             case PRZYBYCIE_AWARII_MALA:
             case PRZYBYCIE_AWARII_BINDOWNICA:
-                this.isEqualToCurrentSimulationTime();
+                return this.isEqualToCurrentSimulationTime();
             case OBSLUGA_AWARII_DUZA_START:
                 return (getLargePrinterAsFirst().isBreakdown()
                         && !getLargePrinterAsFirst().isBusy()
@@ -92,7 +97,7 @@ public class Activity{
             case OBSLUGA_AWARII_DUZA_KONIEC:
             case OBSLUGA_AWARII_MALA_KONIEC:
             case OBSLUGA_AWARII_BINDOWNICA_KONIEC:
-                this.isEqualToCurrentSimulationTime();
+                return this.isEqualToCurrentSimulationTime();
             default:
                 System.out.println("Niedozwolony HEADER !!");
         }
@@ -110,16 +115,13 @@ public class Activity{
             // AWARIE ////////////////////////////////////
             case PRZYBYCIE_AWARII_DUZA:
                 getLargePrinterAsFirst().changeBreakDown(true);
-                newChangeStateTime = getNewChangeStateTimeAfterBreakdown();
-                return produceNextActivity(newChangeStateTime);
+                return produceNextActivity(headers.OBSLUGA_AWARII_DUZA_START);
             case PRZYBYCIE_AWARII_MALA:
                 getSmallPrinterAsFirst().changeBreakDown(true);
-                newChangeStateTime = getNewChangeStateTimeAfterBreakdown();
-                return produceNextActivity(newChangeStateTime);
+                return produceNextActivity(headers.OBSLUGA_AWARII_MALA_START);
             case PRZYBYCIE_AWARII_BINDOWNICA:
                 getBindingMachineAsFirst().changeBreakDown(true);
-                newChangeStateTime = getNewChangeStateTimeAfterBreakdown();
-                return produceNextActivity(newChangeStateTime);
+                return produceNextActivity(headers.OBSLUGA_AWARII_BINDOWNICA_START);
             case OBSLUGA_AWARII_DUZA_START:
                 parentCoordinator.availableStaffNum--;
                 getLargePrinterAsFirst().changeBreakDown(false);
@@ -144,33 +146,44 @@ public class Activity{
             case OBSLUGA_AWARII_DUZA_KONIEC:
                 parentCoordinator.availableStaffNum++;
                 getLargePrinterAsFirst().changeBusy(false);
-                return null;
+                newChangeStateTime = getNewChangeStateTimeAfterBreakdown();
+                return produceNextActivity(headers.PRZYBYCIE_AWARII_DUZA, newChangeStateTime);
             case OBSLUGA_AWARII_MALA_KONIEC:
                 parentCoordinator.availableStaffNum++;
                 getSmallPrinterAsFirst().changeBusy(false);
-                return null;
+                newChangeStateTime = getNewChangeStateTimeAfterBreakdown();
+                return produceNextActivity(headers.PRZYBYCIE_AWARII_MALA, newChangeStateTime);
             case OBSLUGA_AWARII_BINDOWNICA_KONIEC:
                 parentCoordinator.availableStaffNum++;
                 getBindingMachineAsFirst().changeBusy(false);
-                return null;
+                newChangeStateTime = getNewChangeStateTimeAfterBreakdown();
+                return produceNextActivity(headers.PRZYBYCIE_AWARII_BINDOWNICA, newChangeStateTime);
             default:
                 System.out.println("Niedozwolony HEADER !!");
         }
         return null;
     }
 
+    Activity produceNextActivity(headers newHeader){
+        return new Activity(newHeader, stateChangeTime, client,
+                machines, firstMachineID, secondMachineID, parentCoordinator);
+    }
+
+
     Activity produceNextActivity(Integer newChangeStateTime){
         return new Activity(header, newChangeStateTime, client,
-                 machines, firstMachineID, secondMachineID);
+                 machines, firstMachineID, secondMachineID, parentCoordinator);
     }
 
     Activity produceNextActivity(headers newHeader, Integer newChangeStateTime){
         return new Activity(newHeader, newChangeStateTime, client,
-                machines, firstMachineID, secondMachineID);
+                machines, firstMachineID, secondMachineID, parentCoordinator);
     }
 
     void reportActivity(){
-        System.out.println("Activity Type: " + header.toString());
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Activity Type: ").append(header.toString()).append(" ").append(firstMachineID);
+        System.out.println(stringBuilder.toString());
     }
 
 }

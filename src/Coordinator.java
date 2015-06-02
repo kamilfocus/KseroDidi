@@ -56,19 +56,19 @@ public class Coordinator {
         for(int i=0; i<machines.getLargePrinterNum(); i++){
             int newArrivalTime = 7 + generator.nextInt(8);
             activities.add(new Activity(Activity.headers.PRZYBYCIE_AWARII_DUZA,
-                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_LARGE), machines, i, -1) );
+                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_LARGE), machines, i, -1, this) );
         }
 
         for(int i=0; i<machines.getSmallPrinterNum(); i++){
             int newArrivalTime = 2 + generator.nextInt(6);
             activities.add(new Activity(Activity.headers.PRZYBYCIE_AWARII_MALA,
-                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_SMALL), machines, i, -1) );
+                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_SMALL), machines, i, -1, this) );
         }
 
         for(int i=0; i<machines.getBinderNum(); i++){
             int newArrivalTime = 4 + generator.nextInt(3);
             activities.add(new Activity(Activity.headers.PRZYBYCIE_AWARII_BINDOWNICA,
-                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_BIND), machines, i, -1) );
+                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_BIND), machines, i, -1, this) );
         }
 
 
@@ -82,7 +82,11 @@ public class Coordinator {
         while(allProceduresFinished == false && currentSimulationTime<totalSimulationTime){
             currentSimulationTime = scanTime();
             reportTime();
-            scanActivities();
+            Boolean isAnyActivityDone = scanActivities();
+            if(!isAnyActivityDone){
+                Integer newTime = scanTime(currentSimulationTime);
+                setTimeForBlockedActivities(currentSimulationTime, newTime);
+            }
             allProceduresFinished = activities.isEmpty();
         }
     }
@@ -95,8 +99,30 @@ public class Coordinator {
         return minActivityTime;
     }
 
-    private void scanActivities(){
+    private Integer scanTime(Integer currentSimulationTime){
+        Integer minActivityTime = -1;
+        for(Activity activity : activities)
+            if((minActivityTime > activity.getStateChangeTime() || minActivityTime<0)
+                    && activity.getStateChangeTime()!=currentSimulationTime)
+                minActivityTime = activity.getStateChangeTime();
+        return minActivityTime;
+    }
+
+    private void setTimeForBlockedActivities(Integer currentSimulationTime, Integer newTime){
+        for(Activity activity : activities)
+            if(currentSimulationTime == activity.getStateChangeTime())
+                activity.setStateChangeTime(newTime);
+
+    }
+
+    private Boolean scanActivities(){
+
         Iterator <Activity> activityIterator = activities.iterator();
+        List<Activity> activitiesToRemove = new LinkedList<Activity>();
+        List<Activity> activitiesToAdd = new LinkedList<Activity>();
+
+        Boolean isAnyActivityDone = false;
+
         while(activityIterator.hasNext()){
             Activity currentActivity = activityIterator.next();
             if(currentActivity.checkConditions()){
@@ -104,10 +130,16 @@ public class Coordinator {
                 Activity newActivity = currentActivity.runProcedure();
                 newActivity.reportActivity();
                 if(newActivity != null)
-                    activities.add(newActivity);
-                activityIterator.remove();
+                    activitiesToAdd.add(newActivity);
+                activitiesToRemove.add(currentActivity);
+                isAnyActivityDone = true;
             }
         }
+
+        activities.addAll(activitiesToAdd);
+        activities.removeAll(activitiesToRemove);
+
+        return isAnyActivityDone;
     }
 
     void reportTime(){
