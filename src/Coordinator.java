@@ -101,10 +101,10 @@ public class Coordinator {
         // KLIENCI - START ////////////////////////////////////
         activities.add(new Activity(Activity.Headers.OBSLUGA_KLIENTA_MALY_DRUK_BIND_START,
                 INFINITY, new Client(Client.clientTypes.SMALL_PRINT_BIND), machines, 0, -1,
-                this, true) );
+                this, false) );
         activities.add(new Activity(Activity.Headers.WYJSCIE_KLIENTA_MALY_DRUK_BIND_START,
                 INFINITY, new Client(Client.clientTypes.SMALL_PRINT_BIND), machines, 0, -1,
-                this, true) );
+                this, false) );
 
         //DRUK+BIND - START ////////////////////////////////////
         activities.add(new Activity(Activity.Headers.DRUKOWANIE_MALA_START,

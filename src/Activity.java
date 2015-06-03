@@ -345,11 +345,11 @@ public class Activity{
                 client.setBindNum();
                 return null;
             case WYJSCIE_KLIENTA_MALY_DRUK_BIND_START:
+                parentCoordinator.availableStaffNum++;
+                parentCoordinator.removeFromServicedClients(Client.clientStates.SMALL_PRINT_BIND_HAPPY);
                 return produceNextActivity(Headers.WYJSCIE_KLIENT_MALY_DRUK_BIND_KONIEC,
                         parentCoordinator.getCurrentSimulationTime()+1, true);
             case WYJSCIE_KLIENT_MALY_DRUK_BIND_KONIEC:
-                parentCoordinator.availableStaffNum++;
-                parentCoordinator.removeFromServicedClients(Client.clientStates.SMALL_PRINT_BIND_HAPPY);
                 return null;
             // DRUK+BIND ////////////////////////////////////
             case DRUKOWANIE_MALA_START:
@@ -358,6 +358,7 @@ public class Activity{
                 client = parentCoordinator.getFirstServicedClient(Client.clientStates.SMALL_PRINT_BIND_WAITING_SMALL_PRINT);
                 getSmallPrinterAsFirst().updateInkAmount(client.getSmallPrintPages());
                 getSmallPrinterAsFirst().updatePaperAmount(client.getSmallPrintPages());
+                //client.setClientState(Client.clientStates.SMALL_PRINT_BIND_IN_SMALL_PRINT);
                 newChangeStateTime = parentCoordinator.getCurrentSimulationTime() + getSmallPrinterAsFirst().getPrintingTime(client.getSmallPrintPages());
                 return produceNextActivity(Headers.DRUKOWANIE_MALA_KONIEC,
                         newChangeStateTime, true);

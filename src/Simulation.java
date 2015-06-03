@@ -10,7 +10,7 @@ public class Simulation {
         Integer smallPrinterNum = new Integer(3);
         Integer largePrinterNum = new Integer(1);
         Integer binderNum = new Integer(1);
-        Integer staffNum = new Integer(2);
+        Integer staffNum = new Integer(10);
 
         Coordinator coordinator = new Coordinator(
                 totalSimulationTime, smallPrinterNum, largePrinterNum, binderNum, staffNum);

@@ -30,6 +30,7 @@ public class Client {
             RECEIVE_ORDER_IN_QUEUE,
             ELECTRONIC_ORDER_IN_QUEUE,
             SMALL_PRINT_BIND_WAITING_SMALL_PRINT,
+            SMALL_PRINT_BIND_IN_SMALL_PRINT,
             SMALL_PRINT_BIND_WAITING_BIND,
             SMALL_PRINT_BIND_HAPPY
 
@@ -54,7 +55,7 @@ public class Client {
         }
 
         void setClientSmallPrintPages(){
-            smallPrintPages = 1 + r.nextInt(10);
+            smallPrintPages = 10 + r.nextInt(10);
         }
 
         Integer getSmallPrintPages(){
@@ -73,6 +74,9 @@ public class Client {
             //@TODO More Transitions to put
             switch(clientState){
                 case SMALL_PRINT_BIND_WAITING_SMALL_PRINT:
+                    clientState = clientStates.SMALL_PRINT_BIND_WAITING_BIND;
+                    break;
+                case SMALL_PRINT_BIND_IN_SMALL_PRINT:
                     clientState = clientStates.SMALL_PRINT_BIND_WAITING_BIND;
                     break;
                 default:
