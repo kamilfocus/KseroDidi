@@ -90,8 +90,6 @@ public class Machines {
             inkExchangeTime = new Integer(1+generator.nextInt(5));
             paperExchangeTime = new Integer(1+generator.nextInt(1));
 
-            busy = new Boolean(false);
-            breakdown = new Boolean(false);
             inkAmount = new Integer(cartridgeCap);
             paperAmount = new Integer(paperCap);
         }
