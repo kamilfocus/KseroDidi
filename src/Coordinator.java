@@ -84,7 +84,7 @@ public class Coordinator {
             reportTime();
             Boolean isAnyActivityDone = scanActivities();
             if(!isAnyActivityDone){
-                Integer newTime = scanTime(currentSimulationTime);
+                Integer newTime = scanTimeForNextMinimalTime(currentSimulationTime);
                 setTimeForBlockedActivities(currentSimulationTime, newTime);
             }
             allProceduresFinished = activities.isEmpty();
@@ -99,7 +99,7 @@ public class Coordinator {
         return minActivityTime;
     }
 
-    private Integer scanTime(Integer currentSimulationTime){
+    private Integer scanTimeForNextMinimalTime(Integer currentSimulationTime){
         Integer minActivityTime = -1;
         for(Activity activity : activities)
             if((minActivityTime > activity.getStateChangeTime() || minActivityTime<0)
@@ -128,7 +128,7 @@ public class Coordinator {
             if(currentActivity.checkConditions()){
                 //@TODO Sprawdz warunki unikalne dla kazdego headera (Boolean checkConditions(String header)) i uruchom procedure (startProcedure(String header)
                 Activity newActivity = currentActivity.runProcedure();
-                newActivity.reportActivity();
+                currentActivity.reportActivity();
                 if(newActivity != null)
                     activitiesToAdd.add(newActivity);
                 activitiesToRemove.add(currentActivity);

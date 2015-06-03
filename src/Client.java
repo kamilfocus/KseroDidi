@@ -1,7 +1,3 @@
-import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by KAMIL on 2015-06-02.
