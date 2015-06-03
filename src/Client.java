@@ -12,7 +12,11 @@ public class Client {
             ELECTRONIC_ORDER,
             BREAKDOWN_LARGE,
             BREAKDOWN_SMALL,
-            BREAKDOWN_BIND
+            BREAKDOWN_BIND,
+            PAPER_EXCHANGE_LARGE,
+            PAPER_EXCHANGE_SMALL,
+            INK_EXCHANGE_LARGE,
+            INK_EXCHANGE_SMALL
         }
 
         clientTypes clientType;

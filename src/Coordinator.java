@@ -22,6 +22,7 @@ public class Coordinator {
 
     Random generator;
     static final int queueCapacity = 100;
+    static final int INFINITY = 100000000;
 
     BlockingQueue<Client> clientsQueue;
     BlockingQueue<Client> ordersQueue;
@@ -52,23 +53,41 @@ public class Coordinator {
     private void generateInitialActivites(){
         activities = new LinkedList<Activity>();
         //@TODO Wygenerowanie listy dzia³an
-        // AWARIE ////////////////////////////////////
         for(int i=0; i<machines.getLargePrinterNum(); i++){
+            // AWARIE ////////////////////////////////////
             int newArrivalTime = 7 + generator.nextInt(8);
-            activities.add(new Activity(Activity.headers.PRZYBYCIE_AWARII_DUZA,
-                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_LARGE), machines, i, -1, this) );
+            activities.add(new Activity(Activity.Headers.PRZYBYCIE_AWARII_DUZA,
+                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_LARGE), machines, i, -1,
+                    this, true) );
+            // WYMIANY ////////////////////////////////////
+            activities.add(new Activity(Activity.Headers.WYMIANA_PAPIERU_DUZA_START,
+                    INFINITY, new Client(Client.clientTypes.PAPER_EXCHANGE_LARGE), machines, i, -1,
+                    this, false) );
+            activities.add(new Activity(Activity.Headers.WYMIANA_TUSZU_DUZA_START,
+                    INFINITY, new Client(Client.clientTypes.INK_EXCHANGE_LARGE), machines, i, -1,
+                    this, false) );
         }
 
         for(int i=0; i<machines.getSmallPrinterNum(); i++){
+            // AWARIE ////////////////////////////////////
             int newArrivalTime = 2 + generator.nextInt(6);
-            activities.add(new Activity(Activity.headers.PRZYBYCIE_AWARII_MALA,
-                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_SMALL), machines, i, -1, this) );
+            activities.add(new Activity(Activity.Headers.PRZYBYCIE_AWARII_MALA,
+                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_SMALL), machines, i, -1,
+                    this, true) );
+            // WYMIANY ////////////////////////////////////
+            activities.add(new Activity(Activity.Headers.WYMIANA_PAPIERU_MALA_START,
+                    INFINITY, new Client(Client.clientTypes.PAPER_EXCHANGE_SMALL), machines, i, -1,
+                    this, false) );
+            activities.add(new Activity(Activity.Headers.WYMIANA_TUSZU_MALA_START,
+                    INFINITY, new Client(Client.clientTypes.INK_EXCHANGE_SMALL), machines, i, -1,
+                    this, false) );
         }
 
         for(int i=0; i<machines.getBinderNum(); i++){
             int newArrivalTime = 4 + generator.nextInt(3);
-            activities.add(new Activity(Activity.headers.PRZYBYCIE_AWARII_BINDOWNICA,
-                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_BIND), machines, i, -1, this) );
+            activities.add(new Activity(Activity.Headers.PRZYBYCIE_AWARII_BINDOWNICA,
+                    newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_BIND), machines, i, -1,
+                    this, true) );// AWARIE ////////////////////////////////////
         }
 
 
@@ -131,7 +150,8 @@ public class Coordinator {
                 currentActivity.reportActivity();
                 if(newActivity != null)
                     activitiesToAdd.add(newActivity);
-                activitiesToRemove.add(currentActivity);
+                if(currentActivity.isRemovable())
+                    activitiesToRemove.add(currentActivity);
                 isAnyActivityDone = true;
             }
         }

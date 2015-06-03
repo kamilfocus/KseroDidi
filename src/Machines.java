@@ -70,15 +70,6 @@ public class Machines {
 
     public class SmallPrinter extends Printer{
 
-        Integer cartridgeCap;
-        Integer paperCap;
-        Integer printingTime;
-        Integer inkConsumption;
-        Integer paperConsumption;
-        Integer breakdownRepairTime;
-        Integer inkExchangeTime;
-        Integer paperExchangeTime;
-
         SmallPrinter(){
 
             cartridgeCap = new Integer(500);
@@ -87,8 +78,6 @@ public class Machines {
             inkConsumption = new Integer(1+generator.nextInt(1));
             paperConsumption = new Integer(1);
             breakdownRepairTime = new Integer(5 + generator.nextInt(56));
-            inkExchangeTime = new Integer(1+generator.nextInt(5));
-            paperExchangeTime = new Integer(1+generator.nextInt(1));
 
             inkAmount = new Integer(cartridgeCap);
             paperAmount = new Integer(paperCap);
@@ -98,18 +87,10 @@ public class Machines {
             breakdownRepairTime = (5 + generator.nextInt(56));
             return breakdownRepairTime;
         }
+
     }
 
     public class LargePrinter extends Printer{
-
-        Integer cartridgeCap;
-        Integer paperCap;
-        Integer printingTime;
-        Integer inkConsumption;
-        Integer paperConsumption;
-        Integer breakdownRepairTime;
-        Integer inkExchangeTime;
-        Integer paperExchangeTime;
 
         LargePrinter(){
 
@@ -119,8 +100,6 @@ public class Machines {
             inkConsumption = new Integer(5+generator.nextInt(6));
             paperConsumption = new Integer(1);
             breakdownRepairTime = new Integer(60 + generator.nextInt(31));
-            inkExchangeTime = new Integer(1+generator.nextInt(5));
-            paperExchangeTime = new Integer(1+generator.nextInt(1));
 
             inkAmount = new Integer(cartridgeCap);
             paperAmount = new Integer(paperCap);
@@ -138,12 +117,44 @@ public class Machines {
         Integer inkAmount;
         Integer paperAmount;
 
+        Integer cartridgeCap;
+        Integer paperCap;
+        Integer printingTime;
+        Integer inkConsumption;
+        Integer paperConsumption;
+        Integer breakdownRepairTime;
+        Integer inkExchangeTime;
+        Integer paperExchangeTime;
+
+        Printer(){
+            inkExchangeTime = new Integer(1+generator.nextInt(5));
+            paperExchangeTime = new Integer(1+generator.nextInt(1));
+        }
+
+        Integer getPaperCap(){
+            return paperCap;
+        }
+
         Integer getPaperAmount(){
             return paperAmount;
         }
 
         Integer getInkAmount(){
             return inkAmount;
+        }
+
+        Integer getCartridgeCap(){
+            return cartridgeCap;
+        }
+
+        Integer getInkExchangeTime(){
+            inkExchangeTime = 1+generator.nextInt(5);
+            return inkExchangeTime;
+        }
+
+        Integer getPaperExchangeTime(){
+            paperExchangeTime = 1+generator.nextInt(1);
+            return paperExchangeTime;
         }
 
         void setPaperAmount(Integer paperAmount){
