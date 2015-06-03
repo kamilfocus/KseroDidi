@@ -13,6 +13,9 @@ public class Machines {
 
     Random generator;
 
+    static final int PAPER_AND_INK_EXCHANGE_THRESHOLD = 5;
+    static final int SECS_TO_MIN = 60;
+
     List<SmallPrinter> smallPrinters;
     List<LargePrinter> largePrinters;
     List<BindingMachine> bindingMachines;
@@ -88,6 +91,11 @@ public class Machines {
             return breakdownRepairTime;
         }
 
+        Integer getPrintingTime(Integer pagesToPrint){
+            printingTime = 5+generator.nextInt(6);
+            return (printingTime*pagesToPrint/SECS_TO_MIN + 1);
+        }
+
     }
 
     public class LargePrinter extends Printer{
@@ -108,6 +116,11 @@ public class Machines {
         Integer getBreakdownRepairTime(){
             breakdownRepairTime = (60 + generator.nextInt(31));
             return breakdownRepairTime;
+        }
+
+        Integer getPrintingTime(Integer pagesToPrint){
+            printingTime = 20+generator.nextInt(11);
+            return (printingTime*pagesToPrint/SECS_TO_MIN + 1);
         }
 
     }
@@ -164,6 +177,19 @@ public class Machines {
         void setInkAmount(Integer inkAmount){
             this.inkAmount = inkAmount;
         }
+
+        Boolean checkIfPrintPossible(){
+            return !isBreakdown() && inkAmount>cartridgeCap/PAPER_AND_INK_EXCHANGE_THRESHOLD
+                    && paperAmount>paperCap/PAPER_AND_INK_EXCHANGE_THRESHOLD;
+        }
+
+        void updateInkAmount(Integer pagesToPrint){
+            inkAmount = inkAmount - pagesToPrint*inkConsumption;
+        }
+
+        void updatePaperAmount(Integer pagesToPrint){
+            paperAmount = paperAmount - pagesToPrint*paperConsumption;
+        }
     }
 
     public class BindingMachine extends Machine{
@@ -182,6 +208,12 @@ public class Machines {
             breakdownRepairTime = (5 + generator.nextInt(26));
             return breakdownRepairTime;
         }
+
+        Integer getBindingTime(Integer blocksToBind){
+            bindingTime = 1+generator.nextInt(1);
+            return (bindingTime *blocksToBind + 1);
+        }
+
     }
 
     public class Machine{

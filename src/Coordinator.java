@@ -1,7 +1,4 @@
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -13,19 +10,21 @@ public class Coordinator {
     List<Activity> activities;
     Boolean allProceduresFinished;
 
-    Integer currentSimulationTime;
+
     Integer totalSimulationTime;
     Integer staffNum;
+
+    Integer currentSimulationTime;
     Integer availableStaffNum;
     Integer clientsServiced;
-
+    Integer ordersToPickUpNum;
 
     Random generator;
-    static final int queueCapacity = 100;
     static final int INFINITY = 100000000;
 
-    BlockingQueue<Client> clientsQueue;
-    BlockingQueue<Client> ordersQueue;
+    Queue<Client> clientsQueue;
+    Queue<Client> ordersQueue;
+    List<Client> servicedClients;
 
     Machines machines;
 
@@ -39,13 +38,15 @@ public class Coordinator {
         this.staffNum = staffNum;
         this.availableStaffNum = new Integer(staffNum);
         this.clientsServiced = new Integer(0);
+        this.ordersToPickUpNum = new Integer(0);
 
         allProceduresFinished = new Boolean(false);
 
         generator = new Random();
 
-        clientsQueue = new ArrayBlockingQueue<Client>(queueCapacity);
-        ordersQueue = new ArrayBlockingQueue<Client>(queueCapacity);
+        servicedClients= new LinkedList<Client>();
+        clientsQueue = new ArrayDeque<Client>();
+        ordersQueue = new ArrayDeque<Client>();
 
         generateInitialActivites();
     }
@@ -84,11 +85,34 @@ public class Coordinator {
         }
 
         for(int i=0; i<machines.getBinderNum(); i++){
+            // AWARIE ////////////////////////////////////
             int newArrivalTime = 4 + generator.nextInt(3);
             activities.add(new Activity(Activity.Headers.PRZYBYCIE_AWARII_BINDOWNICA,
                     newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_BIND), machines, i, -1,
-                    this, true) );// AWARIE ////////////////////////////////////
+                    this, true) );
         }
+
+        // PRZYBYCIA KLIENTOW ////////////////////////////////////
+        int newArrivalTime = 2 + generator.nextInt(2);
+        activities.add(new Activity(Activity.Headers.PRZYBYCIE_KLIENTA_MALY_DRUK_BIND,
+                newArrivalTime, new Client(Client.clientTypes.SMALL_PRINT_BIND), machines, 0, -1,
+                this, true) );
+
+        // KLIENCI - START ////////////////////////////////////
+        activities.add(new Activity(Activity.Headers.OBSLUGA_KLIENTA_MALY_DRUK_BIND_START,
+                INFINITY, new Client(Client.clientTypes.SMALL_PRINT_BIND), machines, 0, -1,
+                this, true) );
+        activities.add(new Activity(Activity.Headers.WYJSCIE_KLIENTA_MALY_DRUK_BIND_START,
+                INFINITY, new Client(Client.clientTypes.SMALL_PRINT_BIND), machines, 0, -1,
+                this, true) );
+
+        //DRUK+BIND - START ////////////////////////////////////
+        activities.add(new Activity(Activity.Headers.DRUKOWANIE_MALA_START,
+                INFINITY, new Client(Client.clientTypes.NOT_DETERMINED), machines, 0, -1,
+                this, false) );
+        activities.add(new Activity(Activity.Headers.BINDOWANIE_START,
+                INFINITY, new Client(Client.clientTypes.NOT_DETERMINED), machines, 0, -1,
+                this, false) );
 
 
     }
@@ -166,14 +190,66 @@ public class Coordinator {
         System.out.println("Current Simulation Time: " + currentSimulationTime);
     }
 
-
-
     public Integer getCurrentSimulationTime(){
         return currentSimulationTime;
     }
 
     public Integer getAvailableStaffNumber(){
         return availableStaffNum;
+    }
+
+    public Integer getOrdersToPickUpNum() { return ordersToPickUpNum; }
+
+    void addToClientQueue(Client newClient){
+        clientsQueue.add(newClient);
+    }
+
+    Client getFirstClientInQueue(){
+        return clientsQueue.poll();
+    }
+
+    Client checkFirstClientInQueue(){
+        return clientsQueue.peek();
+    }
+
+    Integer clientQueueSize(){
+        return clientsQueue.size();
+    }
+
+    void addToServicedClients(Client newClient){
+        servicedClients.add(newClient);
+    }
+
+    void removeFromServicedClients(Client.clientStates clientState){
+
+        Iterator <Client> servicedClientsIterator = servicedClients.iterator();
+        while(servicedClientsIterator.hasNext()){
+            if(servicedClientsIterator.next().getClientState() == clientState)
+                break;
+        }
+
+        if(servicedClientsIterator!=null)
+            servicedClientsIterator.remove();
+    }
+
+    Boolean hasAnyServicedClientState(Client.clientStates clientState){
+        Iterator <Client> servicedClientsIterator = servicedClients.iterator();
+        Boolean result = false;
+        while(servicedClientsIterator.hasNext()){
+            if(servicedClientsIterator.next().getClientState() == clientState)
+                result = true;
+        }
+        return result;
+    }
+
+    Client getFirstServicedClient(Client.clientStates clientState){
+        Iterator <Client> servicedClientsIterator = servicedClients.iterator();
+        while(servicedClientsIterator.hasNext()){
+            Client currClient = servicedClientsIterator.next();
+            if(currClient.getClientState() == clientState)
+                return currClient;
+        }
+        return null;
     }
 
 }
