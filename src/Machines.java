@@ -68,12 +68,7 @@ public class Machines {
     }
 
 
-    public class SmallPrinter{
-
-        Boolean busy;
-        Boolean breakdown;
-        Integer inkAmount;
-        Integer paperAmount;
+    public class SmallPrinter extends Printer{
 
         Integer cartridgeCap;
         Integer paperCap;
@@ -101,34 +96,13 @@ public class Machines {
             paperAmount = new Integer(paperCap);
         }
 
-        void changeBusy(Boolean newState){
-            busy = newState;
-        }
-
-        void changeBreakDown(Boolean newState){
-            breakdown = newState;
-        }
-
-        Boolean isBreakdown(){
-            return breakdown;
-        }
-
-        Boolean isBusy(){
-            return busy;
-        }
-
         Integer getBreakdownRepairTime(){
             breakdownRepairTime = (5 + generator.nextInt(56));
             return breakdownRepairTime;
         }
     }
 
-    public class LargePrinter{
-
-        Boolean busy;
-        Boolean breakdown;
-        Integer inkAmount;
-        Integer paperAmount;
+    public class LargePrinter extends Printer{
 
         Integer cartridgeCap;
         Integer paperCap;
@@ -150,48 +124,63 @@ public class Machines {
             inkExchangeTime = new Integer(1+generator.nextInt(5));
             paperExchangeTime = new Integer(1+generator.nextInt(1));
 
-            busy = new Boolean(false);
-            breakdown = new Boolean(false);
             inkAmount = new Integer(cartridgeCap);
             paperAmount = new Integer(paperCap);
-        }
-
-        Boolean isBreakdown(){
-            return breakdown;
-        }
-
-        Boolean isBusy(){
-            return busy;
-        }
-
-        void changeBusy(Boolean newState){
-            busy = newState;
-        }
-
-        void changeBreakDown(Boolean newState){
-            breakdown = newState;
         }
 
         Integer getBreakdownRepairTime(){
             breakdownRepairTime = (60 + generator.nextInt(31));
             return breakdownRepairTime;
         }
+
     }
 
-    public class BindingMachine{
+    public class Printer extends Machine{
 
-        Boolean busy;
-        Boolean breakdown;
+        Integer inkAmount;
+        Integer paperAmount;
+
+        Integer getPaperAmount(){
+            return paperAmount;
+        }
+
+        Integer getInkAmount(){
+            return inkAmount;
+        }
+
+        void setPaperAmount(Integer paperAmount){
+            this.paperAmount = paperAmount;
+        }
+
+        void setInkAmount(Integer inkAmount){
+            this.inkAmount = inkAmount;
+        }
+    }
+
+    public class BindingMachine extends Machine{
 
         Integer bindingTime;
         Integer breakdownRepairTime;
-
 
         BindingMachine(){
 
             bindingTime = new Integer(1+generator.nextInt(1));
             breakdownRepairTime = new Integer(5 + generator.nextInt(26));
 
+        }
+
+        Integer getBreakdownRepairTime(){
+            breakdownRepairTime = (5 + generator.nextInt(26));
+            return breakdownRepairTime;
+        }
+    }
+
+    public class Machine{
+
+        Boolean busy;
+        Boolean breakdown;
+
+        Machine(){
             busy = new Boolean(false);
             breakdown = new Boolean(false);
         }
@@ -212,10 +201,6 @@ public class Machines {
             breakdown = newState;
         }
 
-        Integer getBreakdownRepairTime(){
-            breakdownRepairTime = (5 + generator.nextInt(26));
-            return breakdownRepairTime;
-        }
     }
 
 }

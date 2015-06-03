@@ -27,7 +27,16 @@ public class Activity{
         OBSLUGA_AWARII_MALA_START,
         OBSLUGA_AWARII_MALA_KONIEC,
         OBSLUGA_AWARII_BINDOWNICA_START,
-        OBSLUGA_AWARII_BINDOWNICA_KONIEC
+        OBSLUGA_AWARII_BINDOWNICA_KONIEC,
+        // WYMIANY ////////////////////////////////////
+        WYMIANA_PAPIERU_DUZA_START,
+        WYMIANA_PAPIERU_DUZA_KONIEC,
+        WYMIANA_PAPIERU_MALA_START,
+        WYMIANA_PAPIERU_MALA_KONIEC,
+        WYMIANA_TUSZU_DUZA_START,
+        WYMIANA_TUSZU_DUZA_KONIEC,
+        WYMIANA_TUSZU_MALA_START,
+        WYMIANA_TUSZU_MALA_KONIEC
     }
 
     Activity(headers header, Integer stateChangeTime, Client client,
