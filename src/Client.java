@@ -29,10 +29,13 @@ public class Client {
             SMALL_PRINT_LARGE_PRINT_IN_QUEUE,
             RECEIVE_ORDER_IN_QUEUE,
             ELECTRONIC_ORDER_IN_QUEUE,
+            SMALL_PRINT_BIND_OUT_QUEUE,
             SMALL_PRINT_BIND_WAITING_SMALL_PRINT,
             SMALL_PRINT_BIND_IN_SMALL_PRINT,
+            SMALL_PRINT_BIND_IN_BIND,
             SMALL_PRINT_BIND_WAITING_BIND,
-            SMALL_PRINT_BIND_HAPPY
+            SMALL_PRINT_BIND_HAPPY,
+            SMALL_PRINT_BIND_EXIT
 
         }
 
@@ -73,14 +76,30 @@ public class Client {
         void makeStateTransition(){
             //@TODO More Transitions to put
             switch(clientState){
+                case SMALL_PRINT_BIND_IN_QUEUE:
+                    clientState = clientStates.SMALL_PRINT_BIND_OUT_QUEUE;
+                    break;
+                case SMALL_PRINT_BIND_OUT_QUEUE:
+                    clientState = clientStates.SMALL_PRINT_BIND_WAITING_SMALL_PRINT;
+                    break;
                 case SMALL_PRINT_BIND_WAITING_SMALL_PRINT:
                     clientState = clientStates.SMALL_PRINT_BIND_IN_SMALL_PRINT;
                     break;
                 case SMALL_PRINT_BIND_IN_SMALL_PRINT:
                     clientState = clientStates.SMALL_PRINT_BIND_WAITING_BIND;
                     break;
+                case SMALL_PRINT_BIND_WAITING_BIND:
+                    clientState = clientStates.SMALL_PRINT_BIND_IN_BIND;
+                    break;
+                case SMALL_PRINT_BIND_IN_BIND:
+                    clientState = clientStates.SMALL_PRINT_BIND_HAPPY;
+                    break;
+                case SMALL_PRINT_BIND_HAPPY:
+                    clientState = clientStates.SMALL_PRINT_BIND_EXIT;
+                    break;
                 default:
                     System.out.println("Incorrect State in makeStateTransition()");
+                    System.out.println(clientState);
             }
         }
 }

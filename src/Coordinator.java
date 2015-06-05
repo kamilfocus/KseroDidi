@@ -125,11 +125,12 @@ public class Coordinator {
         while(allProceduresFinished == false && currentSimulationTime<totalSimulationTime){
             currentSimulationTime = scanTime();
             reportTime();
+
             Boolean isAnyActivityDone = scanActivities();
-            if(!isAnyActivityDone){
-                Integer newTime = scanTimeForNextMinimalTime(currentSimulationTime);
-                setTimeForBlockedActivities(currentSimulationTime, newTime);
-            }
+            while(isAnyActivityDone)
+                isAnyActivityDone=scanActivities();
+            Integer newTime = scanTimeForNextMinimalTime(currentSimulationTime);
+            setTimeForBlockedActivities(currentSimulationTime, newTime);
             allProceduresFinished = activities.isEmpty();
         }
     }

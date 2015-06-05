@@ -337,20 +337,29 @@ public class Activity{
                 parentCoordinator.availableStaffNum--;
                 client = parentCoordinator.getFirstClientInQueue();
                 parentCoordinator.addToServicedClients(client);
+                client.makeStateTransition();
                 return produceNextActivity(Headers.OBSLUGA_KLIENTA_MALY_DRUK_BIND_KONIEC,
                         parentCoordinator.getCurrentSimulationTime()+1, true);
             case OBSLUGA_KLIENTA_MALY_DRUK_BIND_KONIEC:
-                client.setClientState(Client.clientStates.SMALL_PRINT_BIND_WAITING_SMALL_PRINT);
+               // client.setClientState(Client.clientStates.SMALL_PRINT_BIND_WAITING_SMALL_PRINT);
+                client.makeStateTransition();
                 client.setClientSmallPrintPages();
                 client.setBindNum();
                 return null;
             case WYJSCIE_KLIENTA_MALY_DRUK_BIND_START:
-                parentCoordinator.availableStaffNum++;
+
+             //   client.makeStateTransition();
+
                 parentCoordinator.removeFromServicedClients(Client.clientStates.SMALL_PRINT_BIND_HAPPY);
                 return produceNextActivity(Headers.WYJSCIE_KLIENT_MALY_DRUK_BIND_KONIEC,
                         parentCoordinator.getCurrentSimulationTime()+1, true);
+
             case WYJSCIE_KLIENT_MALY_DRUK_BIND_KONIEC:
+                parentCoordinator.availableStaffNum++;
                 return null;
+
+
+
             // DRUK+BIND ////////////////////////////////////
             case DRUKOWANIE_MALA_START:
                 setIDForFirstFreeSmallPrinter();
@@ -359,13 +368,14 @@ public class Activity{
                 getSmallPrinterAsFirst().updateInkAmount(client.getSmallPrintPages());
                 getSmallPrinterAsFirst().updatePaperAmount(client.getSmallPrintPages());
                 client.makeStateTransition();
-                //client.setClientState(Client.clientStates.SMALL_PRINT_BIND_IN_SMALL_PRINT);
+             //   client.setClientState(Client.clientStates.SMALL_PRINT_BIND_IN_SMALL_PRINT);
                 newChangeStateTime = parentCoordinator.getCurrentSimulationTime() + getSmallPrinterAsFirst().getPrintingTime(client.getSmallPrintPages());
                 return produceNextActivity(Headers.DRUKOWANIE_MALA_KONIEC,
                         newChangeStateTime, true);
             case DRUKOWANIE_MALA_KONIEC:
                 getSmallPrinterAsFirst().changeBusy(false);
                 client.makeStateTransition();
+              //  client.setClientState(Client.clientStates.SMALL_PRINT_BIND_WAITING_BIND);
                 return null;
             case BINDOWANIE_START:
                 setIDForFirstFreeBindingMachine();
@@ -373,11 +383,13 @@ public class Activity{
                 client = parentCoordinator.getFirstServicedClient(Client.clientStates.SMALL_PRINT_BIND_WAITING_BIND);
                 newChangeStateTime = parentCoordinator.getCurrentSimulationTime()
                         + getBindingMachineAsFirst().getBindingTime(client.getBindNum());
+                client.makeStateTransition();
                 return produceNextActivity(Headers.BINDOWANIE_KONIEC,
                         newChangeStateTime, true);
             case BINDOWANIE_KONIEC:
                 getBindingMachineAsFirst().changeBusy(false);
-                client.setClientState(Client.clientStates.SMALL_PRINT_BIND_HAPPY);
+                client.makeStateTransition();
+               // client.setClientState(Client.clientStates.SMALL_PRINT_BIND_HAPPY);
                 return null;
             default:
                 System.out.println("Niedozwolony HEADER !!");
