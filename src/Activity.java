@@ -358,6 +358,7 @@ public class Activity{
                 client = parentCoordinator.getFirstServicedClient(Client.clientStates.SMALL_PRINT_BIND_WAITING_SMALL_PRINT);
                 getSmallPrinterAsFirst().updateInkAmount(client.getSmallPrintPages());
                 getSmallPrinterAsFirst().updatePaperAmount(client.getSmallPrintPages());
+                client.makeStateTransition();
                 //client.setClientState(Client.clientStates.SMALL_PRINT_BIND_IN_SMALL_PRINT);
                 newChangeStateTime = parentCoordinator.getCurrentSimulationTime() + getSmallPrinterAsFirst().getPrintingTime(client.getSmallPrintPages());
                 return produceNextActivity(Headers.DRUKOWANIE_MALA_KONIEC,

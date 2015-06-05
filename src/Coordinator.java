@@ -56,7 +56,7 @@ public class Coordinator {
         //@TODO Wygenerowanie listy dzia³an
         for(int i=0; i<machines.getLargePrinterNum(); i++){
             // AWARIE ////////////////////////////////////
-            int newArrivalTime = 7 + generator.nextInt(8);
+            int newArrivalTime = 7 + generator.nextInt(80);
             activities.add(new Activity(Activity.Headers.PRZYBYCIE_AWARII_DUZA,
                     newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_LARGE), machines, i, -1,
                     this, true) );
@@ -71,7 +71,7 @@ public class Coordinator {
 
         for(int i=0; i<machines.getSmallPrinterNum(); i++){
             // AWARIE ////////////////////////////////////
-            int newArrivalTime = 2 + generator.nextInt(6);
+            int newArrivalTime = 2 + generator.nextInt(60);
             activities.add(new Activity(Activity.Headers.PRZYBYCIE_AWARII_MALA,
                     newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_SMALL), machines, i, -1,
                     this, true) );
@@ -86,7 +86,7 @@ public class Coordinator {
 
         for(int i=0; i<machines.getBinderNum(); i++){
             // AWARIE ////////////////////////////////////
-            int newArrivalTime = 4 + generator.nextInt(3);
+            int newArrivalTime = 4 + generator.nextInt(30);
             activities.add(new Activity(Activity.Headers.PRZYBYCIE_AWARII_BINDOWNICA,
                     newArrivalTime, new Client(Client.clientTypes.BREAKDOWN_BIND), machines, i, -1,
                     this, true) );

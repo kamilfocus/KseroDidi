@@ -1,6 +1,10 @@
 /**
  * Created by KAMIL on 2015-06-01.
  */
+
+import java.io.*;
+import java.util.*;
+
 public class Simulation {
 
     static public void main(String [] args){

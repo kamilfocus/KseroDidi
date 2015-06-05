@@ -74,7 +74,7 @@ public class Client {
             //@TODO More Transitions to put
             switch(clientState){
                 case SMALL_PRINT_BIND_WAITING_SMALL_PRINT:
-                    clientState = clientStates.SMALL_PRINT_BIND_WAITING_BIND;
+                    clientState = clientStates.SMALL_PRINT_BIND_IN_SMALL_PRINT;
                     break;
                 case SMALL_PRINT_BIND_IN_SMALL_PRINT:
                     clientState = clientStates.SMALL_PRINT_BIND_WAITING_BIND;
