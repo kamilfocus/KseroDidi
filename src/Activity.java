@@ -54,6 +54,12 @@ public class Activity{
         OBSLUGA_KLIENTA_MALY_DRUK_DUZY_DRUK_KONIEC,
         WYJSCIE_KLIENTA_MALY_DRUK_DUZY_DRUK_START,
         WYJSCIE_KLIENTA_MALY_DRUK_DUZY_DRUK_KONIEC,
+        OBSLUGA_ZAMOWIENIA_ELEKTRONICZEGO_START,
+        OBSLUGA_ZAMOWIENIA_ELEKTRONICZEGO_KONIEC,
+        ODLOZENIE_ZAMOWIENIA_ELEKTRONICZEGO_START,
+        ODLOZENIE_ZAMOWIENIA_ELEKTRONICZEGO_KONIEC,
+        OBSLUGA_KLIENTA_ODB_ZAM_START,
+        OBSLUGA_KLIENTA_ODB_ZAM_KONIEC,
         // DRUK+BIND ////////////////////////////////////
         DRUKOWANIE_MALA_START,
         DRUKOWANIE_MALA_KONIEC,
@@ -177,10 +183,10 @@ public class Activity{
             // KLIENCI ////////////////////////////////////
             case PRZYBYCIE_KLIENTA_MALY_DRUK_BIND:
             case PRZYBYCIE_KLIENTA_MALY_DRUK_DUZY_DRUK:
-            /*case PRZYBYCIE_ZAMOWIENIA_ELEKTRONICZNEGO:*/
+            case PRZYBYCIE_ZAMOWIENIA_ELEKTRONICZNEGO:/**/
                 return isEqualToCurrentSimulationTime();
-            /*case PRZYBYCIE_KLIENTA_ODB_ZAM:
-                return (isEqualToCurrentSimulationTime() && parentCoordinator.getOrdersToPickUpNum()>0);*/
+            case PRZYBYCIE_KLIENTA_ODB_ZAM:
+                return (isEqualToCurrentSimulationTime() && parentCoordinator.getOrdersToPickUpNum()>0);/**/
             case OBSLUGA_KLIENTA_MALY_DRUK_BIND_START:
                 return (parentCoordinator.clientQueueSize()>0
                         && checkStateOfFirstClientInQueue()== Client.clientStates.SMALL_PRINT_BIND_IN_QUEUE
@@ -191,21 +197,34 @@ public class Activity{
                         && checkStateOfFirstClientInQueue()== Client.clientStates.SMALL_PRINT_LARGE_PRINT_IN_QUEUE
                         && isStaffAvailable() && getLargePrinterAsFirst().checkIfPrintPossible()
                         && isSmallPrintPossible());
+            case OBSLUGA_KLIENTA_ODB_ZAM_START:
+                return (parentCoordinator.clientQueueSize()>0
+                        && checkStateOfFirstClientInQueue()== Client.clientStates.RECEIVE_ORDER_IN_QUEUE);
+            case OBSLUGA_ZAMOWIENIA_ELEKTRONICZEGO_START:
+                return (parentCoordinator.clientQueueSize()==0 && parentCoordinator.orderQueueSize()>0
+                        && isStaffAvailable() && isSmallPrintPossible());
             case OBSLUGA_KLIENTA_MALY_DRUK_BIND_KONIEC:
             case OBSLUGA_KLIENTA_MALY_DRUK_DUZY_DRUK_KONIEC:
-                return isEqualToCurrentSimulationTime();
+            case OBSLUGA_KLIENTA_ODB_ZAM_KONIEC:
+            case OBSLUGA_ZAMOWIENIA_ELEKTRONICZEGO_KONIEC:
+                    return isEqualToCurrentSimulationTime();
             case WYJSCIE_KLIENTA_MALY_DRUK_BIND_START:
                 return parentCoordinator.hasAnyServicedClientState(Client.clientStates.SMALL_PRINT_BIND_HAPPY);
             case WYJSCIE_KLIENTA_MALY_DRUK_DUZY_DRUK_START:
                 return parentCoordinator.hasAnyServicedClientState(Client.clientStates.SMALL_PRINT_LARGE_PRINT_HAPPY);
+            case ODLOZENIE_ZAMOWIENIA_ELEKTRONICZEGO_START:
+                return parentCoordinator.hasAnyServicedClientState(Client.clientStates.ELECTRONIC_ORDER_HAPPY);
             case WYJSCIE_KLIENT_MALY_DRUK_BIND_KONIEC:
             case WYJSCIE_KLIENTA_MALY_DRUK_DUZY_DRUK_KONIEC:
+            case ODLOZENIE_ZAMOWIENIA_ELEKTRONICZEGO_KONIEC:
                 return isEqualToCurrentSimulationTime();
 
             // DRUK+BIND ////////////////////////////////////
             case DRUKOWANIE_MALA_START://@TODO pozostale opcje (klienci)
-                return (parentCoordinator.hasAnyServicedClientState(new Client.clientStates[]{Client.clientStates.SMALL_PRINT_BIND_WAITING_SMALL_PRINT,
-                Client.clientStates.SMALL_PRINT_LARGE_PRINT_WAITING_SMALL_PRINT}) && isAnySmallFree());
+                return (parentCoordinator.hasAnyServicedClientState(new Client.clientStates[]
+                        {       Client.clientStates.SMALL_PRINT_BIND_WAITING_SMALL_PRINT,
+                                Client.clientStates.SMALL_PRINT_LARGE_PRINT_WAITING_SMALL_PRINT,
+                                Client.clientStates.ELECTRONIC_ORDER_WAITING_SMALL_PRINT    }) && isAnySmallFree());
             case DRUKOWANIE_MALA_KONIEC:
                 return isEqualToCurrentSimulationTime();
             case DRUKOWANIE_DUZA_START:
@@ -218,6 +237,7 @@ public class Activity{
                             && !getBindingMachineAsFirst().isBusy());
             case BINDOWANIE_KONIEC:
                 return isEqualToCurrentSimulationTime();
+
             default:
                 System.out.println("Niedozwolony HEADER !!");
         }
@@ -343,7 +363,7 @@ public class Activity{
                 getSmallPrinterAsFirst().changeBusy(true);
                 newChangeStateTime = new Integer(parentCoordinator.getCurrentSimulationTime()
                         + getSmallPrinterAsFirst().getInkExchangeTime());
-                return produceNextActivity(Headers.WYMIANA_PAPIERU_MALA_KONIEC, newChangeStateTime, true);
+                return produceNextActivity(Headers.WYMIANA_TUSZU_MALA_KONIEC, newChangeStateTime, true);
             case WYMIANA_PAPIERU_DUZA_KONIEC:
             case WYMIANA_TUSZU_DUZA_KONIEC:
                 parentCoordinator.availableStaffNum++;
@@ -365,8 +385,16 @@ public class Activity{
                 client.setClientState(Client.clientStates.SMALL_PRINT_LARGE_PRINT_IN_QUEUE);
                 newChangeStateTime = getNewChangeStateTimeForNextClientArrival();
                 return produceNextActivity(newChangeStateTime);
-            /*case PRZYBYCIE_ZAMOWIENIA_ELEKTRONICZNEGO:
-            case PRZYBYCIE_KLIENTA_ODB_ZAM:*/
+            case PRZYBYCIE_ZAMOWIENIA_ELEKTRONICZNEGO:
+                parentCoordinator.addToOrderQueue(client);
+                client.setClientState(Client.clientStates.ELECTRONIC_ORDER_IN_QUEUE);
+                newChangeStateTime = getNewChangeStateTimeForNextClientArrival();
+                return produceNextActivity(newChangeStateTime);
+            case PRZYBYCIE_KLIENTA_ODB_ZAM:/**/
+                parentCoordinator.ordersToPickUpNum--;
+                parentCoordinator.addToClientQueue(client);
+                client.setClientState(Client.clientStates.RECEIVE_ORDER_IN_QUEUE);
+                return null; //Generowanie klienta w tym miejscu zatka kolejke jesli klient znajdzie sie na poczatku przed zrealizowaniem zamowienia !
             case OBSLUGA_KLIENTA_MALY_DRUK_BIND_START:
                 parentCoordinator.availableStaffNum--;
                 client = parentCoordinator.getFirstClientInQueue();
@@ -381,6 +409,19 @@ public class Activity{
                 client.makeStateTransition();
                 return produceNextActivity(Headers.OBSLUGA_KLIENTA_MALY_DRUK_DUZY_DRUK_KONIEC,
                         parentCoordinator.getCurrentSimulationTime()+1, true);
+            case OBSLUGA_KLIENTA_ODB_ZAM_START:
+                parentCoordinator.availableStaffNum--;
+                client = parentCoordinator.getFirstClientInQueue();
+                return produceNextActivity(Headers.OBSLUGA_KLIENTA_ODB_ZAM_KONIEC,
+                        parentCoordinator.getCurrentSimulationTime()+1, true);
+            case OBSLUGA_ZAMOWIENIA_ELEKTRONICZEGO_START:
+                parentCoordinator.availableStaffNum--;
+                client = parentCoordinator.getFirstOrderInQueue();
+                parentCoordinator.addToServicedClients(client);
+                client.makeStateTransition();
+                return produceNextActivity(Headers.OBSLUGA_ZAMOWIENIA_ELEKTRONICZEGO_KONIEC,
+                        parentCoordinator.getCurrentSimulationTime()+1, true);
+
             case OBSLUGA_KLIENTA_MALY_DRUK_BIND_KONIEC:
                // client.setClientState(Client.clientStates.SMALL_PRINT_BIND_WAITING_SMALL_PRINT);
                 client.makeStateTransition();
@@ -392,10 +433,17 @@ public class Activity{
                 client.setClientSmallPrintPages();
                 client.setClientLargePrintPages();
                 return null;
+            case OBSLUGA_KLIENTA_ODB_ZAM_KONIEC:
+                parentCoordinator.availableStaffNum++;
+                parentCoordinator.clientsServiced++;
+                return null;
+            case OBSLUGA_ZAMOWIENIA_ELEKTRONICZEGO_KONIEC:
+                client.makeStateTransition();
+                client.setClientSmallPrintPages();
+                return null;
+
             case WYJSCIE_KLIENTA_MALY_DRUK_BIND_START:
-
              //   client.makeStateTransition();
-
                 parentCoordinator.removeFromServicedClients(Client.clientStates.SMALL_PRINT_BIND_HAPPY);
                 return produceNextActivity(Headers.WYJSCIE_KLIENT_MALY_DRUK_BIND_KONIEC,
                         parentCoordinator.getCurrentSimulationTime()+1, true);
@@ -405,18 +453,30 @@ public class Activity{
                 return produceNextActivity(Headers.WYJSCIE_KLIENTA_MALY_DRUK_DUZY_DRUK_KONIEC,
                         parentCoordinator.getCurrentSimulationTime()+1, true);
 
+            case ODLOZENIE_ZAMOWIENIA_ELEKTRONICZEGO_START:
+                parentCoordinator.removeFromServicedClients(Client.clientStates.RECEIVE_ORDER_HAPPY);
+                return produceNextActivity(Headers.ODLOZENIE_ZAMOWIENIA_ELEKTRONICZEGO_KONIEC,
+                        parentCoordinator.getCurrentSimulationTime()+1, true);
+
             case WYJSCIE_KLIENT_MALY_DRUK_BIND_KONIEC:
             case WYJSCIE_KLIENTA_MALY_DRUK_DUZY_DRUK_KONIEC:
                 parentCoordinator.availableStaffNum++;
                 return null;
+            case ODLOZENIE_ZAMOWIENIA_ELEKTRONICZEGO_KONIEC:
+                parentCoordinator.availableStaffNum++;
+                parentCoordinator.ordersToPickUpNum++;
+                newChangeStateTime = getNewChangeStateTimeForNextClientArrival();
+                return produceNextActivity(Headers.PRZYBYCIE_KLIENTA_ODB_ZAM, newChangeStateTime,
+                        new Client(Client.clientTypes.RECEIVE_ORDER));
 
             // DRUK+BIND ////////////////////////////////////
             case DRUKOWANIE_MALA_START:
                 setIDForFirstFreeSmallPrinter();
                 getSmallPrinterAsFirst().changeBusy(true);
                 client = parentCoordinator.getFirstServicedClient(new Client.clientStates[]
-                        {Client.clientStates.SMALL_PRINT_BIND_WAITING_SMALL_PRINT,
-                        Client.clientStates.SMALL_PRINT_LARGE_PRINT_WAITING_SMALL_PRINT});
+                        {       Client.clientStates.SMALL_PRINT_BIND_WAITING_SMALL_PRINT,
+                                Client.clientStates.SMALL_PRINT_LARGE_PRINT_WAITING_SMALL_PRINT,
+                                Client.clientStates.ELECTRONIC_ORDER_WAITING_SMALL_PRINT    });
                 getSmallPrinterAsFirst().updateInkAmount(client.getSmallPrintPages());
                 getSmallPrinterAsFirst().updatePaperAmount(client.getSmallPrintPages());
                 client.makeStateTransition();
@@ -478,6 +538,12 @@ public class Activity{
 
     Activity produceNextActivity(Headers newHeader, Integer newChangeStateTime){
         return new Activity(newHeader, newChangeStateTime, client,
+                machines, firstMachineID, secondMachineID,
+                parentCoordinator, removable);
+    }
+
+    Activity produceNextActivity(Headers newHeader, Integer newChangeStateTime, Client newClient){
+        return new Activity(newHeader, newChangeStateTime, newClient,
                 machines, firstMachineID, secondMachineID,
                 parentCoordinator, removable);
     }

@@ -101,6 +101,10 @@ public class Coordinator {
         activities.add(new Activity(Activity.Headers.PRZYBYCIE_KLIENTA_MALY_DRUK_DUZY_DRUK,
                 newArrivalTime, new Client(Client.clientTypes.SMALL_PRINT_LARGE_PRINT), machines, 0, -1,
                 this, true) );
+        newArrivalTime = 10 + generator.nextInt(10);
+        activities.add(new Activity(Activity.Headers.PRZYBYCIE_ZAMOWIENIA_ELEKTRONICZNEGO,
+                newArrivalTime, new Client(Client.clientTypes.ELECTRONIC_ORDER), machines, 0, -1,
+                this, true) );
 
         // KLIENCI - START ////////////////////////////////////
         activities.add(new Activity(Activity.Headers.OBSLUGA_KLIENTA_MALY_DRUK_BIND_START,
@@ -115,6 +119,17 @@ public class Coordinator {
                 this, false) );
         activities.add(new Activity(Activity.Headers.WYJSCIE_KLIENTA_MALY_DRUK_DUZY_DRUK_START,
                 INFINITY, new Client(Client.clientTypes.SMALL_PRINT_LARGE_PRINT), machines, 0, -1,
+                this, false) );
+
+        activities.add(new Activity(Activity.Headers.OBSLUGA_ZAMOWIENIA_ELEKTRONICZEGO_START,
+                INFINITY, new Client(Client.clientTypes.ELECTRONIC_ORDER), machines, 0, -1,
+                this, false) );
+        activities.add(new Activity(Activity.Headers.ODLOZENIE_ZAMOWIENIA_ELEKTRONICZEGO_START,
+                INFINITY, new Client(Client.clientTypes.ELECTRONIC_ORDER), machines, 0, -1,
+                this, false) );
+
+        activities.add(new Activity(Activity.Headers.OBSLUGA_KLIENTA_ODB_ZAM_START,
+                INFINITY, new Client(Client.clientTypes.RECEIVE_ORDER), machines, 0, -1,
                 this, false) );
 
         //DRUK+BIND - START ////////////////////////////////////
@@ -223,12 +238,24 @@ public class Coordinator {
         return clientsQueue.poll();
     }
 
+    void addToOrderQueue(Client newClient){
+        ordersQueue.add(newClient);
+    }
+
+    Client getFirstOrderInQueue(){
+        return ordersQueue.poll();
+    }
+
     Client checkFirstClientInQueue(){
         return clientsQueue.peek();
     }
 
     Integer clientQueueSize(){
         return clientsQueue.size();
+    }
+
+    Integer orderQueueSize(){
+        return ordersQueue.size();
     }
 
     void addToServicedClients(Client newClient){

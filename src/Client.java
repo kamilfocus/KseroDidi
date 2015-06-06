@@ -25,10 +25,8 @@ public class Client {
         }
 
         public enum clientStates{
+
             SMALL_PRINT_BIND_IN_QUEUE,
-            SMALL_PRINT_LARGE_PRINT_IN_QUEUE,
-            RECEIVE_ORDER_IN_QUEUE,
-            ELECTRONIC_ORDER_IN_QUEUE,
             SMALL_PRINT_BIND_OUT_QUEUE,
             SMALL_PRINT_BIND_WAITING_SMALL_PRINT,
             SMALL_PRINT_BIND_IN_SMALL_PRINT,
@@ -36,13 +34,26 @@ public class Client {
             SMALL_PRINT_BIND_WAITING_BIND,
             SMALL_PRINT_BIND_HAPPY,
             SMALL_PRINT_BIND_EXIT,
+
+            SMALL_PRINT_LARGE_PRINT_IN_QUEUE,
             SMALL_PRINT_LARGE_PRINT_OUT_QUEUE,
             SMALL_PRINT_LARGE_PRINT_WAITING_SMALL_PRINT,
             SMALL_PRINT_LARGE_PRINT_IN_SMALL_PRINT,
             SMALL_PRINT_LARGE_PRINT_WAITING_LARGE_PRINT,
             SMALL_PRINT_LARGE_PRINT_IN_LARGE_PRINT,
             SMALL_PRINT_LARGE_PRINT_HAPPY,
-            SMALL_PRINT_LARGE_PRINT_EXIT
+            SMALL_PRINT_LARGE_PRINT_EXIT,
+
+            RECEIVE_ORDER_IN_QUEUE,
+            RECEIVE_ORDER_OUT_QUEUE,
+            RECEIVE_ORDER_HAPPY,
+
+            ELECTRONIC_ORDER_IN_QUEUE,
+            ELECTRONIC_ORDER_OUT_QUEUE,
+            ELECTRONIC_ORDER_WAITING_SMALL_PRINT,
+            ELECTRONIC_ORDER_IN_SMALL_PRINT,
+            ELECTRONIC_ORDER_HAPPY,
+            ELECTRONIC_ORDER_ON_SHELF
         }
 
         clientTypes clientType;
@@ -130,6 +141,32 @@ public class Client {
                     break;
                 case SMALL_PRINT_LARGE_PRINT_HAPPY:
                     clientState = clientStates.SMALL_PRINT_LARGE_PRINT_EXIT;
+                    break;
+
+                case RECEIVE_ORDER_IN_QUEUE:
+                    clientState = clientStates.RECEIVE_ORDER_OUT_QUEUE;
+                    break;
+                case RECEIVE_ORDER_OUT_QUEUE:
+                    clientState = clientStates.SMALL_PRINT_LARGE_PRINT_HAPPY;
+                    break;
+                case RECEIVE_ORDER_HAPPY:
+                    clientState = clientStates.SMALL_PRINT_LARGE_PRINT_EXIT;
+                    break;
+
+                case ELECTRONIC_ORDER_IN_QUEUE:
+                    clientState = clientStates.ELECTRONIC_ORDER_OUT_QUEUE;
+                    break;
+                case ELECTRONIC_ORDER_OUT_QUEUE:
+                    clientState = clientStates.ELECTRONIC_ORDER_WAITING_SMALL_PRINT;
+                    break;
+                case ELECTRONIC_ORDER_WAITING_SMALL_PRINT:
+                    clientState = clientStates.ELECTRONIC_ORDER_IN_SMALL_PRINT;
+                    break;
+                case ELECTRONIC_ORDER_IN_SMALL_PRINT:
+                    clientState = clientStates.ELECTRONIC_ORDER_HAPPY;
+                    break;
+                case ELECTRONIC_ORDER_HAPPY:
+                    clientState = clientStates.ELECTRONIC_ORDER_ON_SHELF;
                     break;
 
                 default:
