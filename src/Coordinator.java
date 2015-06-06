@@ -13,11 +13,16 @@ public class Coordinator {
 
     Integer totalSimulationTime;
     Integer staffNum;
+    Integer[] staffBusyTime;
 
     Integer currentSimulationTime;
     Integer availableStaffNum;
     Integer clientsServiced;
     Integer ordersToPickUpNum;
+
+    Integer smallPagesPrinted;
+    Integer largePagesPrinted;
+    Integer bindedNum;
 
     Random generator;
     static final int INFINITY = 100000000;
@@ -37,8 +42,18 @@ public class Coordinator {
         this.totalSimulationTime = totalSimulationTime;
         this.staffNum = staffNum;
         this.availableStaffNum = new Integer(staffNum);
+        this.staffBusyTime = new Integer[staffNum+2];
+        for(int i = 0; i <= staffNum+1; i++ ) {
+            staffBusyTime[i] = 0;
+        }
+
         this.clientsServiced = new Integer(0);
         this.ordersToPickUpNum = new Integer(0);
+
+        this.smallPagesPrinted = new Integer(0);
+        this.largePagesPrinted = new Integer(0);
+        this.bindedNum = new Integer(0);
+
 
         allProceduresFinished = new Boolean(false);
 
@@ -161,6 +176,7 @@ public class Coordinator {
             Integer newTime = scanTimeForNextMinimalTime(currentSimulationTime);
             setTimeForBlockedActivities(currentSimulationTime, newTime);
             calculateBusyTime(currentSimulationTime, newTime);
+            calculateStaffBusyTime(currentSimulationTime, newTime);
             allProceduresFinished = activities.isEmpty();
         }
 
@@ -332,6 +348,10 @@ public class Coordinator {
         }
     }
 
+    void calculateStaffBusyTime(Integer oldtime, Integer newTime){
+            staffBusyTime[availableStaffNum+1] += (newTime - oldtime);
+    }
+
     void printBusyTimeinPercent(){
         for(int i=0; i<machines.getLargePrinterNum(); i++){
             System.out.println("Large Printer Busy Time with ID " + i + " : " +
@@ -350,10 +370,26 @@ public class Coordinator {
         }
     }
 
+    void printStaffBusyTimeinPercent(){
+        for(int i=1; i<=staffNum+1; i++){
+            System.out.println("Time when available staff =  " + (i-1) + " : " +
+                    100*new Float(staffBusyTime[i].floatValue()
+                            /currentSimulationTime.floatValue()) + "%");
+        }
+    }
+
     void reportSimulationSummary(){
+
+        System.out.println("Small pages printed: " + smallPagesPrinted);
+        System.out.println("Large pages printed: " + largePagesPrinted);
+        System.out.println("Binded: " + bindedNum);
         System.out.println("Clients Serviced: " + clientsServiced);
+        System.out.println("Clients in queue: " + clientQueueSize());
+        System.out.println("Orders in queue: " + orderQueueSize());
         System.out.println("Machine busy-state statistics");
         printBusyTimeinPercent();
+        System.out.println("Staff busy-state statistics");
+        printStaffBusyTimeinPercent();
     }
 
 }

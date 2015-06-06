@@ -487,6 +487,7 @@ public class Activity{
             case DRUKOWANIE_MALA_KONIEC:
                 getSmallPrinterAsFirst().changeBusy(false);
                 client.makeStateTransition();
+                parentCoordinator.smallPagesPrinted += client.getSmallPrintPages();
               //  client.setClientState(Client.clientStates.SMALL_PRINT_BIND_WAITING_BIND);
                 return null;
 
@@ -502,6 +503,7 @@ public class Activity{
                 getLargePrinterAsFirst().changeBusy(false);
                 client.makeStateTransition();
                 //  client.setClientState(Client.clientStates.SMALL_PRINT_BIND_WAITING_BIND);
+                parentCoordinator.largePagesPrinted += client.getLargePrintPages();
                 return null;
 
             case BINDOWANIE_START:
@@ -515,6 +517,7 @@ public class Activity{
             case BINDOWANIE_KONIEC:
                 getBindingMachineAsFirst().changeBusy(false);
                 client.makeStateTransition();
+                parentCoordinator.bindedNum += client.getBindNum();
                // client.setClientState(Client.clientStates.SMALL_PRINT_BIND_HAPPY);
                 return null;
 
