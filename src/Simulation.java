@@ -14,11 +14,12 @@ public class Simulation {
         Integer smallPrinterNum = new Integer(3);
         Integer largePrinterNum = new Integer(1);
         Integer binderNum = new Integer(1);
-        Integer staffNum = new Integer(10);
+        Integer staffNum = new Integer(4);
 
         Coordinator coordinator = new Coordinator(
                 totalSimulationTime, smallPrinterNum, largePrinterNum, binderNum, staffNum);
 
         coordinator.startSimulation();
+        coordinator.reportSimulationSummary();
     }
 }

@@ -221,9 +221,13 @@ public class Machines {
         Boolean busy;
         Boolean breakdown;
 
+        Integer totalBusyTime;
+
         Machine(){
             busy = new Boolean(false);
             breakdown = new Boolean(false);
+
+            totalBusyTime = new Integer(0);
         }
 
         Boolean isBreakdown(){
@@ -240,6 +244,15 @@ public class Machines {
 
         void changeBreakDown(Boolean newState){
             breakdown = newState;
+        }
+
+        void calculateBusyTime(Integer oldTime, Integer newTime){
+            if(isBusy())
+                totalBusyTime += newTime - oldTime;
+        }
+
+        Integer getTotalBusyTime(){
+            return totalBusyTime;
         }
 
     }

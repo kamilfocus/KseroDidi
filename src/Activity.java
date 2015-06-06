@@ -460,6 +460,7 @@ public class Activity{
 
             case WYJSCIE_KLIENT_MALY_DRUK_BIND_KONIEC:
             case WYJSCIE_KLIENTA_MALY_DRUK_DUZY_DRUK_KONIEC:
+                parentCoordinator.clientsServiced++;
                 parentCoordinator.availableStaffNum++;
                 return null;
             case ODLOZENIE_ZAMOWIENIA_ELEKTRONICZEGO_KONIEC:
@@ -556,8 +557,25 @@ public class Activity{
 
     void reportActivity(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Activity Type: ").append(header.toString()).append(" ").append(firstMachineID);
+        stringBuilder.append("Activity Type: ").append(header.toString()).append(" ");
+        boolean isDeviceIDNeeded = isDeviceIDNeeded();
+        if(client.isDeviceIDNeeded() || isDeviceIDNeeded)
+            stringBuilder.append("| Machine ID: ").append(firstMachineID);
         System.out.println(stringBuilder.toString());
+    }
+
+    Boolean isDeviceIDNeeded(){
+        switch(header){
+            case DRUKOWANIE_MALA_START:
+            case DRUKOWANIE_MALA_KONIEC:
+            case DRUKOWANIE_DUZA_START:
+            case DRUKOWANIE_DUZA_KONIEC:
+            case BINDOWANIE_KONIEC:
+            case BINDOWANIE_START:
+                return true;
+            default:
+                return false;
+        }
     }
 
 }

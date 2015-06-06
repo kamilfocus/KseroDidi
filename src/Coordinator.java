@@ -146,7 +146,7 @@ public class Coordinator {
 
     }
 
-    void startSimulation(){
+    Integer startSimulation(){
 
         reportTime();
         allProceduresFinished = activities.isEmpty();
@@ -160,8 +160,11 @@ public class Coordinator {
                 isAnyActivityDone=scanActivities();
             Integer newTime = scanTimeForNextMinimalTime(currentSimulationTime);
             setTimeForBlockedActivities(currentSimulationTime, newTime);
+            calculateBusyTime(currentSimulationTime, newTime);
             allProceduresFinished = activities.isEmpty();
         }
+
+        return currentSimulationTime;
     }
 
     private Integer scanTime(){
@@ -214,10 +217,6 @@ public class Coordinator {
         activities.removeAll(activitiesToRemove);
 
         return isAnyActivityDone;
-    }
-
-    void reportTime(){
-        System.out.println("Current Simulation Time: " + currentSimulationTime);
     }
 
     public Integer getCurrentSimulationTime(){
@@ -315,6 +314,46 @@ public class Coordinator {
                     return currClient;
         }
         return null;
+    }
+
+    void reportTime(){
+        System.out.println("Current Simulation Time: " + currentSimulationTime);
+    }
+
+    void calculateBusyTime(Integer oldtime, Integer newTime){
+        for(int i=0; i<machines.getLargePrinterNum(); i++){
+            machines.getLargePrinter(i).calculateBusyTime(oldtime, newTime);
+        }
+        for(int i=0; i<machines.getSmallPrinterNum(); i++){
+            machines.getSmallPrinter(i).calculateBusyTime(oldtime, newTime);
+        }
+        for(int i=0; i<machines.getBinderNum(); i++){
+            machines.getBindingMachine(i).calculateBusyTime(oldtime, newTime);
+        }
+    }
+
+    void printBusyTimeinPercent(){
+        for(int i=0; i<machines.getLargePrinterNum(); i++){
+            System.out.println("Large Printer Busy Time with ID " + i + " : " +
+                    100*new Float(machines.getLargePrinter(i).getTotalBusyTime().floatValue()
+                            /currentSimulationTime.floatValue()) + "%");
+        }
+        for(int i=0; i<machines.getSmallPrinterNum(); i++){
+            System.out.println("Small Printer Busy Time with ID " + i + " : " +
+                    100*new Float(machines.getSmallPrinter(i).getTotalBusyTime().floatValue()
+                            / currentSimulationTime.floatValue()) + "%");
+        }
+        for(int i=0; i<machines.getBinderNum(); i++){
+            System.out.println("Binding Machine Busy Time with ID " + i + " : " +
+                    100*new Float(machines.getBindingMachine(i).getTotalBusyTime().floatValue()
+                            / currentSimulationTime.floatValue()) + "%");
+        }
+    }
+
+    void reportSimulationSummary(){
+        System.out.println("Clients Serviced: " + clientsServiced);
+        System.out.println("Machine busy-state statistics");
+        printBusyTimeinPercent();
     }
 
 }

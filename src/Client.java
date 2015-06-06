@@ -67,6 +67,10 @@ public class Client {
             this.r = new Random();
         }
 
+        public void setClientType(clientTypes clientType) {
+            this.clientType = clientType;
+        }
+
         public void setClientState(clientStates clientState) {
             this.clientState = clientState;
         }
@@ -172,6 +176,18 @@ public class Client {
                 default:
                     System.out.println("Incorrect State in makeStateTransition()");
                     System.out.println(clientState);
+            }
+        }
+
+        Boolean isDeviceIDNeeded(){
+            switch(clientType){
+                case SMALL_PRINT_BIND:
+                case SMALL_PRINT_LARGE_PRINT:
+                case RECEIVE_ORDER:
+                case ELECTRONIC_ORDER:
+                    return false;
+                default:
+                    return true;
             }
         }
 }
