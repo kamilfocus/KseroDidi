@@ -53,7 +53,7 @@ public class Coordinator {
 
     private void generateInitialActivites(){
         activities = new LinkedList<Activity>();
-        //@TODO Wygenerowanie listy dzia³an
+        //@TODO Wygenerowanie listy dziaï¿½an
         for(int i=0; i<machines.getLargePrinterNum(); i++){
             // AWARIE ////////////////////////////////////
             int newArrivalTime = 7 + generator.nextInt(80);
@@ -97,6 +97,10 @@ public class Coordinator {
         activities.add(new Activity(Activity.Headers.PRZYBYCIE_KLIENTA_MALY_DRUK_BIND,
                 newArrivalTime, new Client(Client.clientTypes.SMALL_PRINT_BIND), machines, 0, -1,
                 this, true) );
+        newArrivalTime = 5 + generator.nextInt(5);
+        activities.add(new Activity(Activity.Headers.PRZYBYCIE_KLIENTA_MALY_DRUK_DUZY_DRUK,
+                newArrivalTime, new Client(Client.clientTypes.SMALL_PRINT_LARGE_PRINT), machines, 0, -1,
+                this, true) );
 
         // KLIENCI - START ////////////////////////////////////
         activities.add(new Activity(Activity.Headers.OBSLUGA_KLIENTA_MALY_DRUK_BIND_START,
@@ -106,13 +110,23 @@ public class Coordinator {
                 INFINITY, new Client(Client.clientTypes.SMALL_PRINT_BIND), machines, 0, -1,
                 this, false) );
 
+        activities.add(new Activity(Activity.Headers.OBSLUGA_KLIENTA_MALY_DRUK_DUZY_DRUK_START,
+                INFINITY, new Client(Client.clientTypes.SMALL_PRINT_LARGE_PRINT), machines, 0, -1,
+                this, false) );
+        activities.add(new Activity(Activity.Headers.WYJSCIE_KLIENTA_MALY_DRUK_DUZY_DRUK_START,
+                INFINITY, new Client(Client.clientTypes.SMALL_PRINT_LARGE_PRINT), machines, 0, -1,
+                this, false) );
+
         //DRUK+BIND - START ////////////////////////////////////
         activities.add(new Activity(Activity.Headers.DRUKOWANIE_MALA_START,
                 INFINITY, new Client(Client.clientTypes.NOT_DETERMINED), machines, 0, -1,
                 this, false) );
-        activities.add(new Activity(Activity.Headers.BINDOWANIE_START,
+        activities.add(new Activity(Activity.Headers.DRUKOWANIE_DUZA_START,
                 INFINITY, new Client(Client.clientTypes.NOT_DETERMINED), machines, 0, -1,
                 this, false) );
+        activities.add(new Activity(Activity.Headers.BINDOWANIE_START,
+                INFINITY, new Client(Client.clientTypes.NOT_DETERMINED), machines, 0, -1,
+                this, false));
 
 
     }
@@ -243,12 +257,35 @@ public class Coordinator {
         return result;
     }
 
+    Boolean hasAnyServicedClientState(Client.clientStates [] clientStates){
+        Iterator <Client> servicedClientsIterator = servicedClients.iterator();
+        Boolean result = false;
+        while(servicedClientsIterator.hasNext()){
+            Client.clientStates currentState = servicedClientsIterator.next().getClientState();
+            for(Client.clientStates matchHeaderState: clientStates)
+                if( matchHeaderState == currentState)
+                    result = true;
+        }
+        return result;
+    }
+
     Client getFirstServicedClient(Client.clientStates clientState){
         Iterator <Client> servicedClientsIterator = servicedClients.iterator();
         while(servicedClientsIterator.hasNext()){
             Client currClient = servicedClientsIterator.next();
             if(currClient.getClientState() == clientState)
                 return currClient;
+        }
+        return null;
+    }
+
+    Client getFirstServicedClient(Client.clientStates [] clientStates){
+        Iterator <Client> servicedClientsIterator = servicedClients.iterator();
+        while(servicedClientsIterator.hasNext()){
+            Client currClient = servicedClientsIterator.next();
+            for(Client.clientStates matchHeaderState: clientStates)
+                if( matchHeaderState == currClient.getClientState())
+                    return currClient;
         }
         return null;
     }

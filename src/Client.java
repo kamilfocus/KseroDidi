@@ -35,13 +35,20 @@ public class Client {
             SMALL_PRINT_BIND_IN_BIND,
             SMALL_PRINT_BIND_WAITING_BIND,
             SMALL_PRINT_BIND_HAPPY,
-            SMALL_PRINT_BIND_EXIT
-
+            SMALL_PRINT_BIND_EXIT,
+            SMALL_PRINT_LARGE_PRINT_OUT_QUEUE,
+            SMALL_PRINT_LARGE_PRINT_WAITING_SMALL_PRINT,
+            SMALL_PRINT_LARGE_PRINT_IN_SMALL_PRINT,
+            SMALL_PRINT_LARGE_PRINT_WAITING_LARGE_PRINT,
+            SMALL_PRINT_LARGE_PRINT_IN_LARGE_PRINT,
+            SMALL_PRINT_LARGE_PRINT_HAPPY,
+            SMALL_PRINT_LARGE_PRINT_EXIT
         }
 
         clientTypes clientType;
         clientStates clientState;
         Integer smallPrintPages;
+        Integer largePrintPages;
         Integer bindNum;
 
         Client(clientTypes clientType){
@@ -65,6 +72,10 @@ public class Client {
             return smallPrintPages;
         }
 
+        void setClientLargePrintPages(){largePrintPages = 3 + r.nextInt(3);}
+
+        Integer getLargePrintPages(){ return largePrintPages;}
+
         void setBindNum(){
             bindNum = 1 + smallPrintPages%PRINT_TO_BIND_RATIO;
         }
@@ -76,6 +87,7 @@ public class Client {
         void makeStateTransition(){
             //@TODO More Transitions to put
             switch(clientState){
+
                 case SMALL_PRINT_BIND_IN_QUEUE:
                     clientState = clientStates.SMALL_PRINT_BIND_OUT_QUEUE;
                     break;
@@ -97,6 +109,29 @@ public class Client {
                 case SMALL_PRINT_BIND_HAPPY:
                     clientState = clientStates.SMALL_PRINT_BIND_EXIT;
                     break;
+
+                case SMALL_PRINT_LARGE_PRINT_IN_QUEUE:
+                    clientState = clientStates.SMALL_PRINT_LARGE_PRINT_OUT_QUEUE;
+                    break;
+                case SMALL_PRINT_LARGE_PRINT_OUT_QUEUE:
+                    clientState = clientStates.SMALL_PRINT_LARGE_PRINT_WAITING_SMALL_PRINT;
+                    break;
+                case SMALL_PRINT_LARGE_PRINT_WAITING_SMALL_PRINT:
+                    clientState = clientStates.SMALL_PRINT_LARGE_PRINT_IN_SMALL_PRINT;
+                    break;
+                case SMALL_PRINT_LARGE_PRINT_IN_SMALL_PRINT:
+                    clientState = clientStates.SMALL_PRINT_LARGE_PRINT_WAITING_LARGE_PRINT;
+                    break;
+                case SMALL_PRINT_LARGE_PRINT_WAITING_LARGE_PRINT:
+                    clientState = clientStates.SMALL_PRINT_LARGE_PRINT_IN_LARGE_PRINT;
+                    break;
+                case SMALL_PRINT_LARGE_PRINT_IN_LARGE_PRINT:
+                    clientState = clientStates.SMALL_PRINT_LARGE_PRINT_HAPPY;
+                    break;
+                case SMALL_PRINT_LARGE_PRINT_HAPPY:
+                    clientState = clientStates.SMALL_PRINT_LARGE_PRINT_EXIT;
+                    break;
+
                 default:
                     System.out.println("Incorrect State in makeStateTransition()");
                     System.out.println(clientState);
