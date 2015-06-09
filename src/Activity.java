@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.Random;
 
 /**
@@ -10,6 +11,7 @@ public class Activity{
     Headers header;
     Integer stateChangeTime;
     Boolean removable;
+    Gui gui;
 
     Integer firstMachineID;
     Integer secondMachineID;
@@ -71,8 +73,9 @@ public class Activity{
 
     Activity(Headers header, Integer stateChangeTime, Client client,
              Machines machines, Integer firstMachineID, Integer secondMachineID,
-             Coordinator parentCoordinator, Boolean removable){
+             Coordinator parentCoordinator, Boolean removable, Gui gui){
 
+        this.gui = gui;
         this.header = header;
         this.stateChangeTime = stateChangeTime;
         this.client = client;
@@ -530,41 +533,44 @@ public class Activity{
     Activity produceNextActivity(Headers newHeader){
         return new Activity(newHeader, stateChangeTime, client,
                 machines, firstMachineID, secondMachineID,
-                parentCoordinator, removable);
+                parentCoordinator, removable, gui);
     }
 
 
     Activity produceNextActivity(Integer newChangeStateTime){
         return new Activity(header, newChangeStateTime, client,
                  machines, firstMachineID, secondMachineID,
-                parentCoordinator, removable);
+                parentCoordinator, removable, gui);
     }
 
     Activity produceNextActivity(Headers newHeader, Integer newChangeStateTime){
         return new Activity(newHeader, newChangeStateTime, client,
                 machines, firstMachineID, secondMachineID,
-                parentCoordinator, removable);
+                parentCoordinator, removable, gui);
     }
 
     Activity produceNextActivity(Headers newHeader, Integer newChangeStateTime, Client newClient){
         return new Activity(newHeader, newChangeStateTime, newClient,
                 machines, firstMachineID, secondMachineID,
-                parentCoordinator, removable);
+                parentCoordinator, removable, gui);
     }
 
     Activity produceNextActivity(Headers newHeader, Integer newChangeStateTime, Boolean newRemovable){
         return new Activity(newHeader, newChangeStateTime, client,
                 machines, firstMachineID, secondMachineID,
-                parentCoordinator, newRemovable);
+                parentCoordinator, newRemovable, gui);
     }
 
-    void reportActivity(){
+    void reportActivity(Gui gui) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Activity Type: ").append(header.toString()).append(" ");
         boolean isDeviceIDNeeded = isDeviceIDNeeded();
-        if(client.isDeviceIDNeeded() || isDeviceIDNeeded)
+        if (client.isDeviceIDNeeded() || isDeviceIDNeeded)
             stringBuilder.append("| Machine ID: ").append(firstMachineID);
         System.out.println(stringBuilder.toString());
+        gui.resultTArea.append("\n" + header.toString());
+        if (client.isDeviceIDNeeded() || isDeviceIDNeeded)
+            stringBuilder.append(" | ID urzadzenia: " + firstMachineID);
     }
 
     Boolean isDeviceIDNeeded(){

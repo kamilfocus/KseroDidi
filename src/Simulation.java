@@ -16,10 +16,10 @@ public class Simulation {
         Integer binderNum = new Integer(1);
         Integer staffNum = new Integer(4);
 
-        Coordinator coordinator = new Coordinator(
-                totalSimulationTime, smallPrinterNum, largePrinterNum, binderNum, staffNum);
+        //Coordinator coordinator = new Coordinator(
+                //totalSimulationTime, smallPrinterNum, largePrinterNum, binderNum, staffNum);
 
-        coordinator.startSimulation();
-        coordinator.reportSimulationSummary();
+        //coordinator.startSimulation();
+        //coordinator.reportSimulationSummary();
     }
 }
