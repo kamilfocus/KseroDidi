@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="KseroDidi:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/KseroDidi_jar</output-path>
+    <root id="archive" name="KseroDidi.jar">
+      <element id="module-output" name="KseroDidi" />
+      <element id="extracted-dir" path="D:/workspace/Psoqap/libs/miglayout-4.0-swing.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
