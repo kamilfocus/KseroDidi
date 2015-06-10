@@ -3,7 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/KseroDidi_jar</output-path>
     <root id="archive" name="KseroDidi.jar">
       <element id="module-output" name="KseroDidi" />
-      <element id="extracted-dir" path="D:/workspace/Psoqap/libs/miglayout-4.0-swing.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/.idea/libraries/miglayout-4.0-swing.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
